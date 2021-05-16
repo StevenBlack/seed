@@ -1,6 +1,6 @@
 # seed
 
-🔐 Hardware wallet seed CLI.
+🔐 Bitcoin wallet seed CLI.
 
 Given a user-provided hash, generate the bitcoin wallet seed, and other allied artefacts.
 
