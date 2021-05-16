@@ -1,5 +1,9 @@
+use std::env;
+
 fn main() {
-    println!("Seed application!");
+    // command line arguments
+    let args: Vec<String> = env::args().collect();
+    println!("Arguments: {:?}", args);
 }
 
 #[cfg(test)]
