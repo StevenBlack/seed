@@ -14,10 +14,10 @@ struct Opt {
 
 #[derive(Default, Debug)]
 struct Checks {
-    integer: bool,
-    hex: bool,
-    base58: bool,
-    wif: bool,
+    intkey: bool,
+    hexkey: bool,
+    base58key: bool,
+    wifkey: bool,
 }
 
 fn main() {
@@ -29,25 +29,16 @@ fn main() {
     }
 
     // run checks on the passed privkey
-    let mut checks: Checks = Default::default();
-
-    // Test the privkey: is it all number characters
-    let allnumbers = opt.privkey.chars().all(char::is_numeric);
-    if allnumbers {
-      checks.integer = true;
-        if opt.debug {
-            println!("Private key is all numbers: {:?}", allnumbers);
-        }
-    }
+    let checks= pivkeychecks(opt.privkey);
 
     // TODO:
     //   many other checks
     if opt.debug {
-        println!("Checks: : {:?}", checks);
+        println!("Private key assessment checks: {:?}", checks);
     }
 
     // bail out here if our checks find nothing usable.
-    if !checks.integer && !checks.hex && !checks.base58 && !checks.wif {
+    if !checks.intkey && !checks.hexkey && !checks.base58key && !checks.wifkey {
         println!("Could not interpret the private key.");
         return;
     }
@@ -59,6 +50,15 @@ fn main() {
     if opt.debug {
         println!("Done.");
     }
+}
+
+fn pivkeychecks(pk: String) -> Checks {
+    let mut checks: Checks = Default::default();
+    let allnumbers = pk.chars().all(char::is_numeric);
+    if allnumbers {
+      checks.intkey = true;
+    }
+    checks
 }
 
 #[cfg(test)]
