@@ -63,8 +63,13 @@ fn pivkeychecks(pk: String) -> Checks {
 
 #[cfg(test)]
 mod tests {
+    use crate::pivkeychecks;
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn key_format_assessment() {
+        let checks = pivkeychecks("12345".to_string());
+        assert_eq!(checks.intkey, true);
+        assert_eq!(checks.hexkey, false);  // for now!
+        assert_eq!(checks.base58key, false);  // for now!
+        assert_eq!(checks.wifkey, false);  // for now!
     }
 }
