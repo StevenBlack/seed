@@ -31,12 +31,12 @@ fn main() {
     }
 
     // run checks on the passed privkey
-    let checks= pivkeychecks(opt.privkey);
+    let checks = pivkeychecks(opt.privkey);
 
     // TODO:
     //   many other checks
     if opt.debug {
-        println!("Private key assessment checks: {:?}", checks);
+        println!("Private key assessment: {:?}", checks);
     }
 
     // bail out here if our checks find nothing usable.
@@ -46,7 +46,6 @@ fn main() {
     }
 
     // TODO:
-    //   assess
     //   process
 
     if opt.debug {
@@ -56,10 +55,8 @@ fn main() {
 
 fn pivkeychecks(pk: String) -> Checks {
     let mut checks: Checks = Default::default();
-    let allnumbers = pk.chars().all(char::is_numeric);
-    if allnumbers {
-      checks.intkey = true;
-    }
+    // all integers?
+    checks.intkey = pk.chars().all(char::is_numeric);
     checks
 }
 
@@ -70,8 +67,8 @@ mod tests {
     fn key_format_assessment() {
         let checks = pivkeychecks("12345".to_string());
         assert_eq!(checks.intkey, true);
-        assert_eq!(checks.hexkey, false);  // for now!
-        assert_eq!(checks.base58key, false);  // for now!
-        assert_eq!(checks.wifkey, false);  // for now!
+        assert_eq!(checks.hexkey, false); // for now!
+        assert_eq!(checks.base58key, false); // for now!
+        assert_eq!(checks.wifkey, false); // for now!
     }
 }
