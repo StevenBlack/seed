@@ -1,3 +1,5 @@
+extern crate hex;
+
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 structopt = { version = "0.3", features = [ "paw" ] }
 paw = "1.0"
+hex = "0.4"
