@@ -15,11 +15,11 @@ struct Opt {
 }
 
 #[derive(Default, Debug)]
-struct Checks {
-    intkey: bool,
-    hexkey: bool,
-    base58key: bool,
-    wifkey: bool,
+struct Keychecks {
+    key_is_int: bool,
+    key_is_hex: bool,
+    key_is_base58: bool,
+    key_is_wif: bool,
 }
 
 fn main() {
@@ -40,7 +40,7 @@ fn main() {
     }
 
     // bail out here if our checks find nothing usable.
-    if !checks.intkey && !checks.hexkey && !checks.base58key && !checks.wifkey {
+    if !checks.key_is_int && !checks.key_is_hex && !checks.key_is_base58 && !checks.key_is_wif {
         println!("Could not interpret the private key.");
         return;
     }
@@ -53,12 +53,12 @@ fn main() {
     }
 }
 
-fn pivkeychecks(pk: String) -> Checks {
-    let mut checks: Checks = Default::default();
+fn pivkeychecks(pk: String) -> Keychecks {
+    let mut checks: Keychecks = Default::default();
     // all integers?
-    checks.intkey = pk.chars().all(char::is_numeric);
+    checks.key_is_int = pk.chars().all(char::is_numeric);
     // hex?
-    checks.hexkey = hex::decode(pk).is_ok();
+    checks.key_is_hex = hex::decode(pk).is_ok();
     checks
 }
 
@@ -68,15 +68,14 @@ mod tests {
     #[test]
     fn key_format_assessment() {
         let mut checks = pivkeychecks("12345".to_string());
-        assert_eq!(checks.intkey, true);
-        assert_eq!(checks.hexkey, false);  // odd length key
-        assert_eq!(checks.base58key, false); // for now!
-        assert_eq!(checks.wifkey, false); // for now!
+        assert_eq!(checks.key_is_int, true);
+        assert_eq!(checks.key_is_hex, false); // odd length key
+        assert_eq!(checks.key_is_base58, false); // for now!
+        assert_eq!(checks.key_is_wif, false); // for now!
         checks = pivkeychecks("1234".to_string());
-        assert_eq!(checks.intkey, true);
-        assert_eq!(checks.hexkey, true);  // even length key
-        assert_eq!(checks.base58key, false); // for now!
-        assert_eq!(checks.wifkey, false); // for now!
-
+        assert_eq!(checks.key_is_int, true);
+        assert_eq!(checks.key_is_hex, true); // even length key
+        assert_eq!(checks.key_is_base58, false); // for now!
+        assert_eq!(checks.key_is_wif, false); // for now!
     }
 }
