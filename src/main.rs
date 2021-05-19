@@ -66,13 +66,16 @@ fn pivkeychecks(pk: String) -> Keychecks {
 mod tests {
     use crate::pivkeychecks;
     #[test]
-    fn key_format_assessment() {
-        let mut checks = pivkeychecks("12345".to_string());
+    fn key_odd_length_integert() {
+        let checks = pivkeychecks("12345".to_string());
         assert_eq!(checks.key_is_int, true);
         assert_eq!(checks.key_is_hex, false); // odd length key
         assert_eq!(checks.key_is_base58, false); // for now!
         assert_eq!(checks.key_is_wif, false); // for now!
-        checks = pivkeychecks("1234".to_string());
+    }
+    #[test]
+    fn key_even_length_integert() {
+        let checks = pivkeychecks("1234".to_string());
         assert_eq!(checks.key_is_int, true);
         assert_eq!(checks.key_is_hex, true); // even length key
         assert_eq!(checks.key_is_base58, false); // for now!
