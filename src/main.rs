@@ -85,7 +85,7 @@ mod tests {
     fn key_negative_integer() {
         let checks = pivkeychecks("-1234".to_string());
         assert_eq!(checks.key_is_int, false);
-        assert_eq!(checks.key_is_hex, false); // even length key
+        assert_eq!(checks.key_is_hex, false);
         assert_eq!(checks.key_is_base58, false); // for now!
         assert_eq!(checks.key_is_wif, false); // for now!
     }
