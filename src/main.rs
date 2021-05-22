@@ -54,9 +54,14 @@ fn main() {
 }
 
 fn pivkeychecks(pk: String) -> Keychecks {
+    extern crate rust_base58;
+    use rust_base58::{ToBase58, FromBase58};
     let mut checks: Keychecks = Default::default();
     // all integers?
     checks.key_is_int = pk.chars().all(char::is_numeric);
+    // base58?
+    // let foo = pk.as_str();
+    // checks.key_is_base58 = foo.from_base58().is_ok();
     // hex?
     checks.key_is_hex = hex::decode(pk).is_ok();
     checks
