@@ -95,4 +95,21 @@ mod tests {
         assert_eq!(checks.key_is_base58, false); // for now!
         assert_eq!(checks.key_is_wif, false); // for now!
     }
+    #[test]
+    fn key_invalid() {
+        let checks = pivkeychecks("love");
+        assert_eq!(checks.key_is_int, false);
+        assert_eq!(checks.key_is_hex, false);
+        assert_eq!(checks.key_is_base58, false); // l and o are invalid
+        assert_eq!(checks.key_is_wif, false); // for now!
+    }
+    #[test]
+    fn key_base58_but() {
+        let checks = pivkeychecks("yuve");
+        assert_eq!(checks.key_is_int, false);
+        assert_eq!(checks.key_is_hex, false);
+        assert_eq!(checks.key_is_base58, true); // l and o are invalid
+        assert_eq!(checks.key_is_wif, false); // for now!
+    }
+
 }
