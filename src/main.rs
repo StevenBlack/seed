@@ -30,8 +30,10 @@ fn main() {
         println!("Private key passed: {:?}", opt.privkey);
     }
 
+    let privkey = opt.privkey.as_str();
+
     // run checks on the passed privkey
-    let checks = pivkeychecks(opt.privkey);
+    let checks = pivkeychecks(&privkey);
 
     // TODO:
     //   many other checks
@@ -53,15 +55,14 @@ fn main() {
     }
 }
 
-fn pivkeychecks(pk: String) -> Keychecks {
+fn pivkeychecks(pk: &str) -> Keychecks {
     extern crate rust_base58;
     use rust_base58::{ToBase58, FromBase58};
     let mut checks: Keychecks = Default::default();
     // all integers?
     checks.key_is_int = pk.chars().all(char::is_numeric);
     // base58?
-    // let foo = pk.as_str();
-    // checks.key_is_base58 = foo.from_base58().is_ok();
+    checks.key_is_base58 = pk.from_base58().is_ok();
     // hex?
     checks.key_is_hex = hex::decode(pk).is_ok();
     checks
@@ -72,23 +73,23 @@ mod tests {
     use crate::pivkeychecks;
     #[test]
     fn key_odd_length_integer() {
-        let checks = pivkeychecks("12345".to_string());
+        let checks = pivkeychecks("12345");
         assert_eq!(checks.key_is_int, true);
         assert_eq!(checks.key_is_hex, false); // odd length key
-        assert_eq!(checks.key_is_base58, false); // for now!
+        assert_eq!(checks.key_is_base58, true);
         assert_eq!(checks.key_is_wif, false); // for now!
     }
     #[test]
     fn key_even_length_integer() {
-        let checks = pivkeychecks("1234".to_string());
+        let checks = pivkeychecks("1234");
         assert_eq!(checks.key_is_int, true);
         assert_eq!(checks.key_is_hex, true); // even length key
-        assert_eq!(checks.key_is_base58, false); // for now!
+        assert_eq!(checks.key_is_base58, true);
         assert_eq!(checks.key_is_wif, false); // for now!
     }
     #[test]
     fn key_negative_integer() {
-        let checks = pivkeychecks("-1234".to_string());
+        let checks = pivkeychecks("-1234");
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
         assert_eq!(checks.key_is_base58, false); // for now!
