@@ -65,6 +65,8 @@ fn pivkeychecks(pk: &str) -> Keychecks {
     checks.key_is_base58 = pk.from_base58().is_ok();
     // hex?
     checks.key_is_hex = hex::decode(pk).is_ok();
+    // wif?
+    checks.key_is_wif = bitcoin::PrivateKey::from_wif(pk).is_ok();
     checks
 }
 
