@@ -115,7 +115,6 @@ mod tests {
     }
     #[test]
     fn key_wif_testnet_compressed() {
-
         let checks = pivkeychecks("cVt4o7BGAig1UXywgGSmARhxMdzP5qvQsxKkSsc1XEkw3tDTQFpy");
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
@@ -130,4 +129,21 @@ mod tests {
         assert_eq!(checks.key_is_base58, true); 
         assert_eq!(checks.key_is_wif, true); 
     }
+    #[test]
+    fn key_wif_invalid_length() {
+        let checks = pivkeychecks("5JYkZjmN7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3444");
+        assert_eq!(checks.key_is_int, false);
+        assert_eq!(checks.key_is_hex, false);
+        assert_eq!(checks.key_is_base58, true); 
+        assert_eq!(checks.key_is_wif, false); 
+    }
+    #[test]
+    fn key_wif_invalid_length2() {
+        let checks = pivkeychecks("5JYkZj7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3");
+        assert_eq!(checks.key_is_int, false);
+        assert_eq!(checks.key_is_hex, false);
+        assert_eq!(checks.key_is_base58, true); 
+        assert_eq!(checks.key_is_wif, false); 
+    }
+
 }
