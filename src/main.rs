@@ -97,6 +97,15 @@ mod tests {
         assert_eq!(checks.key_is_wif, false); 
     }
     #[test]
+    fn key_even_length_integer_0x_prefix() {
+        // not accepting 0x prefix for hex.
+        let checks = pivkeychecks("0x1234");
+        assert_eq!(checks.key_is_int, false);
+        assert_eq!(checks.key_is_hex, false); // even length key
+        assert_eq!(checks.key_is_base58, false);
+        assert_eq!(checks.key_is_wif, false); 
+    }
+    #[test]
     fn key_negative_integer() {
         let checks = pivkeychecks("-1234");
         assert_eq!(checks.key_is_int, false);
