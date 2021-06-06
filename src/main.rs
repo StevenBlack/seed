@@ -47,8 +47,15 @@ fn main() {
         return;
     }
 
-    // TODO:
-    //   process
+    // process
+    // The hex case 
+    if checks.key_is_hex {
+        // we need the hex string to be 64 characters
+        let paddedprivkey = format!("{:0>64}", privkey);
+        let mut bytes = [0u8; 32];
+        hex::decode_to_slice(paddedprivkey, &mut bytes).expect("Hex decoding failed");
+        println!("decoded pk: {:?}", bytes);    
+    }
 
     if opt.debug {
         println!("Done.");
@@ -145,5 +152,4 @@ mod tests {
         assert_eq!(checks.key_is_base58, true); 
         assert_eq!(checks.key_is_wif, false); 
     }
-
 }
