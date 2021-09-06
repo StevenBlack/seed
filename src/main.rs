@@ -30,14 +30,12 @@ struct Keychecks {
 struct Output {
     hex_key: String,
     mainnet: String,
-    mainnet_hash1: String,
-    mainnet_hash2: String,
+    mainnet_hash: String,
     mainnet_checksum: String,
     mainnet_byte_string: String,
 
     testnet: String,
-    testnet_hash1: String,
-    testnet_hash2: String,
+    testnet_hash: String,
     testnet_checksum: String,
     testnet_byte_string: String,
 
@@ -94,8 +92,7 @@ fn main() {
 
         output.hex_key = format!("{:0>64}", privkey);
         output.mainnet = mainnet.clone();
-        output.mainnet_hash1 = mainnet_hash1;
-        output.mainnet_hash2 = mainnet_hash2;
+        output.mainnet_hash = mainnet_hash2;
         output.mainnet_checksum = mainnet_checksum.to_string();
         output.mainnet_byte_string = [mainnet, mainnet_checksum].join("");
 
@@ -109,8 +106,7 @@ fn main() {
 
         output.hex_key = format!("{:0>64}", privkey);
         output.testnet = testnet.clone();
-        output.testnet_hash1 = testnet_hash1;
-        output.testnet_hash2 = testnet_hash2;
+        output.testnet_hash = testnet_hash2;
         output.testnet_checksum = testnet_checksum.to_string();
         output.testnet_byte_string = [testnet, testnet_checksum].join("");
 
