@@ -30,15 +30,11 @@ struct Keychecks {
 struct Output {
     hex_key: String,
     mainnet: String,
-    testnet: String,
-    mainnet_hash: String,
-    testnet_hash: String,
+    mainnet_hash1: String,
+    mainnet_hash2: String,
     mainnet_checksum: String,
-    testnet_checksum: String,
     mainnet_byte_string: String,
-    testnet_byte_string: String,
     wif: String,
-    wif_testnet: String,
 }
 
 fn main() {
@@ -48,8 +44,7 @@ fn main() {
         println!("{:?}", opt);
         println!("Private key passed: {:?}", opt.privkey);
     }
-    let privkey_lower = opt.privkey.to_lowercase();
-    let privkey = privkey_lower.as_str();
+    let privkey = opt.privkey.as_str();
 
     // run checks on the passed privkey
     let checks = pivkeychecks(&privkey);
@@ -76,25 +71,22 @@ fn main() {
         println!("decoded pk: {:?}", bytes);
 
         println!("Privkey with prefix: {:?}", ["80", privkey].join(""));
-        use sha256::digest;
+        use sha256::{digest, digest_bytes};
         // mainnet and textnet prefixes
         let mainnet = ["80", privkey].join("");
-        let testnet = ["ef", privkey].join("");
-        let mainnet_hash = digest(digest(mainnet.clone()));
-        let mainnet_checksum: String = mainnet_hash[..8].to_string();
-        let testnet_hash = digest(digest(testnet.clone()));
-        let testnet_checksum: String = testnet_hash[..8].to_string();
+        let mainnet_bytes = hex::decode(mainnet.clone()).unwrap();
+        let mainnet_hash1 = digest(digest_bytes(&mainnet_bytes));
+        let mainnet_bytes1 = hex::decode(mainnet_hash1.clone()).unwrap();
+        let mainnet_hash2 = digest(digest_bytes(&mainnet_bytes1));
+        let mainnet_checksum: String = mainnet_hash2[..8].to_string();
 
         let mut output: Output = Default::default();
         output.hex_key = format!("{:0>64}", privkey);
         output.mainnet = mainnet.clone();
-        output.testnet = testnet.clone();
-        output.mainnet_hash = mainnet_hash;
-        output.testnet_hash = testnet_hash;
+        output.mainnet_hash1 = mainnet_hash1;
+        output.mainnet_hash2 = mainnet_hash2;
         output.mainnet_checksum = mainnet_checksum.to_string();
-        output.testnet_checksum = testnet_checksum.to_string();
         output.mainnet_byte_string = [mainnet, mainnet_checksum].join("");
-        output.testnet_byte_string = [testnet, testnet_checksum].join("");
 
         println!("Output: {:?}", output);
     }
