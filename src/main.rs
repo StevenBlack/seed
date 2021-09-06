@@ -1,5 +1,9 @@
 extern crate hex;
 
+//
+//  https://observablehq.com/@jimbojw/grokking-bip39
+//
+
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -22,6 +26,21 @@ struct Keychecks {
     key_is_wif: bool,
 }
 
+#[derive(Default, Debug)]
+struct Output {
+    hex_key: String,
+    mainnet: String,
+    testnet: String,
+    mainnet_hash: String,
+    testnet_hash: String,
+    mainnet_checksum: String,
+    testnet_checksum: String,
+    mainnet_byte_string: String,
+    testnet_byte_string: String,
+    wif: String,
+    wif_testnet: String,
+}
+
 fn main() {
     // command line flags and arguments
     let opt = Opt::from_args();
@@ -29,8 +48,8 @@ fn main() {
         println!("{:?}", opt);
         println!("Private key passed: {:?}", opt.privkey);
     }
-
-    let privkey = opt.privkey.as_str();
+    let privkey_lower = opt.privkey.to_lowercase();
+    let privkey = privkey_lower.as_str();
 
     // run checks on the passed privkey
     let checks = pivkeychecks(&privkey);
@@ -48,13 +67,36 @@ fn main() {
     }
 
     // process
-    // The hex case 
+    // The hex case
     if checks.key_is_hex {
         // we need the hex string to be 64 characters
         let paddedprivkey = format!("{:0>64}", privkey);
         let mut bytes = [0u8; 32];
         hex::decode_to_slice(paddedprivkey, &mut bytes).expect("Hex decoding failed");
-        println!("decoded pk: {:?}", bytes);    
+        println!("decoded pk: {:?}", bytes);
+
+        println!("Privkey with prefix: {:?}", ["80", privkey].join(""));
+        use sha256::digest;
+        // mainnet and textnet prefixes
+        let mainnet = ["80", privkey].join("");
+        let testnet = ["ef", privkey].join("");
+        let mainnet_hash = digest(digest(mainnet.clone()));
+        let mainnet_checksum: String = mainnet_hash[..8].to_string();
+        let testnet_hash = digest(digest(testnet.clone()));
+        let testnet_checksum: String = testnet_hash[..8].to_string();
+
+        let mut output: Output = Default::default();
+        output.hex_key = format!("{:0>64}", privkey);
+        output.mainnet = mainnet.clone();
+        output.testnet = testnet.clone();
+        output.mainnet_hash = mainnet_hash;
+        output.testnet_hash = testnet_hash;
+        output.mainnet_checksum = mainnet_checksum.to_string();
+        output.testnet_checksum = testnet_checksum.to_string();
+        output.mainnet_byte_string = [mainnet, mainnet_checksum].join("");
+        output.testnet_byte_string = [testnet, testnet_checksum].join("");
+
+        println!("Output: {:?}", output);
     }
 
     if opt.debug {
@@ -64,7 +106,7 @@ fn main() {
 
 fn pivkeychecks(pk: &str) -> Keychecks {
     extern crate rust_base58;
-    use rust_base58::{FromBase58};
+    use rust_base58::FromBase58;
     let mut checks: Keychecks = Default::default();
     // all integers?
     checks.key_is_int = pk.chars().all(char::is_numeric);
@@ -86,7 +128,7 @@ mod tests {
         assert_eq!(checks.key_is_int, true);
         assert_eq!(checks.key_is_hex, false); // odd length key
         assert_eq!(checks.key_is_base58, true);
-        assert_eq!(checks.key_is_wif, false); 
+        assert_eq!(checks.key_is_wif, false);
     }
     #[test]
     fn key_even_length_integer() {
@@ -94,7 +136,7 @@ mod tests {
         assert_eq!(checks.key_is_int, true);
         assert_eq!(checks.key_is_hex, true); // even length key
         assert_eq!(checks.key_is_base58, true);
-        assert_eq!(checks.key_is_wif, false); 
+        assert_eq!(checks.key_is_wif, false);
     }
     #[test]
     fn key_even_length_integer_0x_prefix() {
@@ -103,7 +145,7 @@ mod tests {
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false); // even length key
         assert_eq!(checks.key_is_base58, false);
-        assert_eq!(checks.key_is_wif, false); 
+        assert_eq!(checks.key_is_wif, false);
     }
     #[test]
     fn key_negative_integer() {
@@ -111,7 +153,7 @@ mod tests {
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
         assert_eq!(checks.key_is_base58, false); // for now!
-        assert_eq!(checks.key_is_wif, false); 
+        assert_eq!(checks.key_is_wif, false);
     }
     #[test]
     fn key_invalid() {
@@ -134,31 +176,31 @@ mod tests {
         let checks = pivkeychecks("cVt4o7BGAig1UXywgGSmARhxMdzP5qvQsxKkSsc1XEkw3tDTQFpy");
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
-        assert_eq!(checks.key_is_base58, true); 
-        assert_eq!(checks.key_is_wif, true); 
+        assert_eq!(checks.key_is_base58, true);
+        assert_eq!(checks.key_is_wif, true);
     }
     #[test]
     fn key_wif_mainnet_uncompressed() {
         let checks = pivkeychecks("5JYkZjmN7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3");
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
-        assert_eq!(checks.key_is_base58, true); 
-        assert_eq!(checks.key_is_wif, true); 
+        assert_eq!(checks.key_is_base58, true);
+        assert_eq!(checks.key_is_wif, true);
     }
     #[test]
     fn key_wif_invalid_length() {
         let checks = pivkeychecks("5JYkZjmN7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3444");
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
-        assert_eq!(checks.key_is_base58, true); 
-        assert_eq!(checks.key_is_wif, false); 
+        assert_eq!(checks.key_is_base58, true);
+        assert_eq!(checks.key_is_wif, false);
     }
     #[test]
     fn key_wif_invalid_length2() {
         let checks = pivkeychecks("5JYkZj7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3");
         assert_eq!(checks.key_is_int, false);
         assert_eq!(checks.key_is_hex, false);
-        assert_eq!(checks.key_is_base58, true); 
-        assert_eq!(checks.key_is_wif, false); 
+        assert_eq!(checks.key_is_base58, true);
+        assert_eq!(checks.key_is_wif, false);
     }
 }
