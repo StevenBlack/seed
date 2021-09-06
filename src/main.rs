@@ -64,6 +64,9 @@ fn main() {
     // process
     // The hex case
     if checks.key_is_hex {
+        // ref: https://en.bitcoin.it/wiki/Wallet_import_format
+        // $ cargo run -- 0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D
+        //
         // we need the hex string to be 64 characters
         let paddedprivkey = format!("{:0>64}", privkey);
         let mut bytes = [0u8; 32];
@@ -71,13 +74,13 @@ fn main() {
         println!("decoded pk: {:?}", bytes);
 
         println!("Privkey with prefix: {:?}", ["80", privkey].join(""));
-        use sha256::{digest, digest_bytes};
-        // mainnet and textnet prefixes
+        use sha256::digest_bytes;
+        // mainnet
         let mainnet = ["80", privkey].join("");
         let mainnet_bytes = hex::decode(mainnet.clone()).unwrap();
-        let mainnet_hash1 = digest(digest_bytes(&mainnet_bytes));
+        let mainnet_hash1 = digest_bytes(&mainnet_bytes);
         let mainnet_bytes1 = hex::decode(mainnet_hash1.clone()).unwrap();
-        let mainnet_hash2 = digest(digest_bytes(&mainnet_bytes1));
+        let mainnet_hash2 = digest_bytes(&mainnet_bytes1);
         let mainnet_checksum: String = mainnet_hash2[..8].to_string();
 
         let mut output: Output = Default::default();
