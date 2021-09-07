@@ -30,12 +30,10 @@ struct Keychecks {
 struct Output {
     hex_key: String,
     mainnet: String,
-    mainnet_hash: String,
     mainnet_checksum: String,
     mainnet_byte_string: String,
 
     testnet: String,
-    testnet_hash: String,
     testnet_checksum: String,
     testnet_byte_string: String,
 
@@ -79,34 +77,23 @@ fn main() {
         println!("decoded pk: {:?}", bytes);
 
         println!("Privkey with prefix: {:?}", ["80", privkey].join(""));
-        use sha256::digest_bytes;
         let mut output: Output = Default::default();
 
         // mainnet
         let mainnet = ["80", privkey].join("");
-        let mainnet_bytes = hex::decode(mainnet.clone()).unwrap();
-        let mainnet_hash1 = digest_bytes(&mainnet_bytes);
-        let mainnet_bytes1 = hex::decode(mainnet_hash1.clone()).unwrap();
-        let mainnet_hash2 = digest_bytes(&mainnet_bytes1);
-        let mainnet_checksum: String = mainnet_hash2[..8].to_string();
+        let mainnet_checksum: String = sha256_twice_checksum(["80", privkey].join(""));
 
         output.hex_key = format!("{:0>64}", privkey);
         output.mainnet = mainnet.clone();
-        output.mainnet_hash = mainnet_hash2;
         output.mainnet_checksum = mainnet_checksum.to_string();
         output.mainnet_byte_string = [mainnet, mainnet_checksum].join("");
 
         // testnet
         let testnet = ["ef", privkey].join("");
-        let testnet_bytes = hex::decode(testnet.clone()).unwrap();
-        let testnet_hash1 = digest_bytes(&testnet_bytes);
-        let testnet_bytes1 = hex::decode(testnet_hash1.clone()).unwrap();
-        let testnet_hash2 = digest_bytes(&testnet_bytes1);
-        let testnet_checksum: String = testnet_hash2[..8].to_string();
+        let testnet_checksum: String = sha256_twice_checksum(["ef", privkey].join(""));
 
         output.hex_key = format!("{:0>64}", privkey);
         output.testnet = testnet.clone();
-        output.testnet_hash = testnet_hash2;
         output.testnet_checksum = testnet_checksum.to_string();
         output.testnet_byte_string = [testnet, testnet_checksum].join("");
 
@@ -117,6 +104,17 @@ fn main() {
         println!("Done.");
     }
 }
+
+fn sha256_twice_checksum(k: String) -> String {
+    use sha256::digest_bytes;
+    let bytes = hex::decode(k.clone()).unwrap();
+    let hash1 = digest_bytes(&bytes);
+    let bytes1 = hex::decode(hash1.clone()).unwrap();
+    let hash2 = digest_bytes(&bytes1);
+    let checksum: String = hash2[..8].to_string();
+    checksum
+}
+
 
 fn pivkeychecks(pk: &str) -> Keychecks {
     extern crate rust_base58;
