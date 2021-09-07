@@ -28,16 +28,16 @@ struct Keychecks {
 
 #[derive(Default, Debug)]
 struct Output {
-    hex_key: String,
+    private_key_string: String,
     mainnet: String,
     mainnet_checksum: String,
     mainnet_byte_string: String,
+    mainnet_wif: String,
 
     testnet: String,
     testnet_checksum: String,
     testnet_byte_string: String,
-
-    wif: String,
+    testnet_wif: String,
 }
 
 fn main() {
@@ -83,7 +83,7 @@ fn main() {
         let mainnet = ["80", privkey].join("");
         let mainnet_checksum: String = sha256_twice_checksum(["80", privkey].join(""));
 
-        output.hex_key = format!("{:0>64}", privkey);
+        output.private_key_string = format!("{:0>64}", privkey);
         output.mainnet = mainnet.clone();
         output.mainnet_checksum = mainnet_checksum.to_string();
         output.mainnet_byte_string = [mainnet, mainnet_checksum].join("");
@@ -92,7 +92,7 @@ fn main() {
         let testnet = ["ef", privkey].join("");
         let testnet_checksum: String = sha256_twice_checksum(["ef", privkey].join(""));
 
-        output.hex_key = format!("{:0>64}", privkey);
+        output.private_key_string = format!("{:0>64}", privkey);
         output.testnet = testnet.clone();
         output.testnet_checksum = testnet_checksum.to_string();
         output.testnet_byte_string = [testnet, testnet_checksum].join("");
@@ -114,7 +114,6 @@ fn sha256_twice_checksum(k: String) -> String {
     let checksum: String = hash2[..8].to_string();
     checksum
 }
-
 
 fn pivkeychecks(pk: &str) -> Keychecks {
     extern crate rust_base58;
@@ -220,7 +219,9 @@ mod tests {
     #[test]
     fn sha256_twice_mainnet() {
         assert_eq!(
-            sha256_twice_checksum("800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D".to_string()),
+            sha256_twice_checksum(
+                "800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D".to_string()
+            ),
             "507A5B8D".to_lowercase().to_string()
         );
     }
@@ -228,9 +229,10 @@ mod tests {
     #[test]
     fn sha256_twice_testnet() {
         assert_eq!(
-            sha256_twice_checksum("ef619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9".to_string()),
+            sha256_twice_checksum(
+                "ef619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9".to_string()
+            ),
             "5ea65746".to_lowercase().to_string()
         );
     }
-
 }
