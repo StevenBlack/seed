@@ -215,4 +215,22 @@ mod tests {
         assert_eq!(checks.key_is_base58, true);
         assert_eq!(checks.key_is_wif, false);
     }
+
+    use crate::sha256_twice_checksum;
+    #[test]
+    fn sha256_twice_mainnet() {
+        assert_eq!(
+            sha256_twice_checksum("800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D".to_string()),
+            "507A5B8D".to_lowercase().to_string()
+        );
+    }
+
+    #[test]
+    fn sha256_twice_testnet() {
+        assert_eq!(
+            sha256_twice_checksum("ef619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9".to_string()),
+            "5ea65746".to_lowercase().to_string()
+        );
+    }
+
 }
