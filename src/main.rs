@@ -29,13 +29,9 @@ struct Keychecks {
 #[derive(Default, Debug)]
 struct Output {
     private_key_string: String,
-    mainnet: String,
-    mainnet_checksum: String,
     mainnet_byte_string: String,
     mainnet_wif: String,
 
-    testnet: String,
-    testnet_checksum: String,
     testnet_byte_string: String,
     testnet_wif: String,
 }
@@ -84,8 +80,6 @@ fn main() {
         let mainnet_checksum: String = sha256_twice_checksum(["80", privkey].join(""));
 
         output.private_key_string = format!("{:0>64}", privkey);
-        output.mainnet = mainnet.clone();
-        output.mainnet_checksum = mainnet_checksum.to_string();
         output.mainnet_byte_string = [mainnet, mainnet_checksum].join("");
 
         // testnet
@@ -93,8 +87,6 @@ fn main() {
         let testnet_checksum: String = sha256_twice_checksum(["ef", privkey].join(""));
 
         output.private_key_string = format!("{:0>64}", privkey);
-        output.testnet = testnet.clone();
-        output.testnet_checksum = testnet_checksum.to_string();
         output.testnet_byte_string = [testnet, testnet_checksum].join("");
 
         println!("Output: {:?}", output);
