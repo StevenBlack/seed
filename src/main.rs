@@ -1,8 +1,15 @@
-extern crate hex;
-
 //
 //  https://observablehq.com/@jimbojw/grokking-bip39
 //
+extern crate bitcoin;
+extern crate hex;
+extern crate secp256k1;
+
+use bitcoin::network::constants::Network;
+use bitcoin::util::address::Address;
+use bitcoin::util::bip32::{ChildNumber, DerivationPath, ExtendedPrivKey, ExtendedPubKey};
+use secp256k1::Secp256k1;
+use std::str::FromStr;
 
 use structopt::StructOpt;
 
