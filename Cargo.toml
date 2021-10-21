@@ -2,7 +2,7 @@
 name = "seed"
 version = "0.1.0"
 authors = ["Steven Black <steveb@stevenblack.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 homepage = "https://github.com/StevenBlack/seed"
 repository = "https://github.com/StevenBlack/seed"
